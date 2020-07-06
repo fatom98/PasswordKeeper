@@ -204,7 +204,7 @@ class GUI(Frame):
     def new(self, selected):
         global width, height
         width, height = 400, 100
-        username = self.db[selected].decode().split(",")[0]
+        username = base64.b64decode(self.db[selected]).decode().split(",")[0]
         usn = StringVar(value=username)
 
         self.top = Toplevel()
