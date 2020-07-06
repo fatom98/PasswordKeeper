@@ -8,8 +8,6 @@ class GUI(Frame):
         Frame.__init__(self, parent)
         self.store = dict()
         self.db = dbm.open("db/DB", "c")
-        self.name = StringVar(value="admin")
-        self.password = StringVar(value="admin")
         self.initUI()
 
     def initUI(self):
@@ -29,14 +27,16 @@ class GUI(Frame):
         nameLabel = Label(frame2, text = "Name: ", font = "ComicSans 12")
         nameLabel.grid(row = 0, column = 0, sticky = W)
 
-        self.nameEntry = Entry(frame2, textvariable = self.name)
+        self.nameEntry = Entry(frame2)
         self.nameEntry.grid(row = 0, column = 1)
+        self.nameEntry.focus()
 
         passwordLabel = Label(frame2, text = "Password: ", font = "ComicSans 12")
         passwordLabel.grid(row = 1, column = 0)
 
-        self.passwordEntry = Entry(frame2, show = "*", textvariable = self.password)
+        self.passwordEntry = Entry(frame2, show = "*")
         self.passwordEntry.grid(row = 1, column = 1)
+        self.passwordEntry.bind("<Return>", lambda event: self.eval())
 
         loginButton = Button(frame2, text = "Login", font = "ComicSans 12", command = self.eval)
         loginButton.grid(row = 0, column = 2, rowspan = 2)
