@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox as msg
 from tkinter.ttk import Treeview
-import dbm
+import dbm, base64
 
 class GUI(Frame):
     def __init__(self, parent):
@@ -55,7 +55,8 @@ class GUI(Frame):
         elif password == "":
             msg.showerror("Error", "Password can't be empty")
         else:
-            usn, pwd = self.db["Login"].decode().split(",")
+
+            usn, pwd = base64.b64decode(self.db["Login"]).decode("utf-8").split(",")
 
             if name == usn and password == pwd:
                 msg.showinfo("Welcome", f"Welcome mr.{name}")
@@ -91,7 +92,7 @@ class GUI(Frame):
 
         self.tree["columns"] = ("two", "three")
         self.tree.column("#0", width = 120, anchor = CENTER)
-        self.tree.column("two", width = 120, anchor = CENTER)
+        self.tree.column("two", width = 180, anchor = CENTER)
         self.tree.column("three", width = 120, anchor = CENTER)
 
         self.tree.heading("#0", text="Site")
@@ -113,7 +114,12 @@ class GUI(Frame):
 
     def show(self):
         self.tree.delete(*self.tree.get_children())
-        self.dic = {key.decode(): [value.decode().split(",")[0], value.decode().split(",")[1]] for key, value in self.db.items()}
+        self.dic = dict()
+        for key, value in self.db.items():
+            site = key.decode("utf-8")
+            username, password = base64.b64decode(value).decode("utf-8").split(",")
+            self.dic[site] = [username, password]
+
         self.value = [(key, self.dic[key]) for key in sorted(self.dic)]
 
         for var in self.value:
@@ -167,7 +173,7 @@ class GUI(Frame):
         password = self.passwordEntry.get()
 
         if site != "" and username != "" and password != "":
-            self.db[site] = f"{username},{password}"
+            self.db[site] = base64.b64encode(f"{username},{password}".encode("utf-8"))
             self.top.destroy()
             self.show()
 
@@ -181,8 +187,10 @@ class GUI(Frame):
         if selected == "":
             msg.showerror("Error", "You need to select an element to delete")
         else:
-            del self.db[selected]
-            self.show()
+            result = msg.askquestion("Delete", "Are you sure?", icon = "warning")
+            if result == "yes":
+                del self.db[selected]
+                self.show()
 
     def upt(self):
         currItem = self.tree.focus()
@@ -234,7 +242,7 @@ class GUI(Frame):
 
         if username != "" and password != "":
             del self.db[selected]
-            self.db[selected] = f"{username},{password}"
+            self.db[selected] = base64.b64encode(f"{username},{password}".encode("utf-8"))
             self.top.destroy()
             self.show()
 

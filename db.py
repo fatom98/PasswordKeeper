@@ -1,6 +1,9 @@
-import dbm
+import dbm, base64
 
 db = dbm.open("db/DB", "c")
-db["Login"] = "admin,admin"
+login = "admin,admin"
+enc = base64.b64encode(login.encode("utf-8"))
+print(enc)
+db["Login"] = enc
 db.close()
 
