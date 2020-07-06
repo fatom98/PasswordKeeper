@@ -189,13 +189,56 @@ class GUI(Frame):
         selected = self.tree.item(currItem)["text"]
 
         if selected == "":
-            msg.showerror("Error", "You need to select an element to delete")
+            msg.showerror("Error", "You need to select an element to update")
         else:
-            pass
+            self.new(selected)
 
+    def new(self, selected):
+        global width, height
+        width, height = 400, 100
+        username = self.db[selected].decode().split(",")[0]
+        usn = StringVar(value=username)
 
+        self.top = Toplevel()
+        self.top.focus()
+        self.top.title("Update Password")
+        self.top.geometry(f"{width}x{height}+{screenWidth // 2 - width // 2}+{screenHeight // 2 - height // 2}")
 
+        usernameLabel = Label(self.top, text="Username: ", font="ComicSans 12")
+        usernameLabel.grid(row=0, column=0)
 
+        self.usernameEntry = Entry(self.top, textvariable = usn)
+        self.usernameEntry.grid(row=0, column=1)
+
+        passwordLabel = Label(self.top, text="Password: ", font="ComicSans 12")
+        passwordLabel.grid(row=1, column=0)
+
+        self.passwordEntry = Entry(self.top)
+        self.passwordEntry.grid(row=1, column=1)
+
+        addButton = Button(self.top, text="Update", font="ComicSans 12", width=7)
+        addButton.grid(row=0, column=2, rowspan = 2)
+        addButton.bind("<ButtonRelease-1>", lambda event: self.db_update(selected))
+
+        Grid.columnconfigure(self.top, 0, weight=1)
+        Grid.columnconfigure(self.top, 1, weight=1)
+        Grid.columnconfigure(self.top, 2, weight=1)
+
+        Grid.rowconfigure(self.top, 0, weight=1)
+        Grid.rowconfigure(self.top, 1, weight=1)
+        Grid.rowconfigure(self.top, 2, weight=1)
+
+    def db_update(self, selected):
+        username = self.usernameEntry.get()
+        password = self.passwordEntry.get()
+
+        if username != "" and password != "":
+            del self.db[selected]
+            self.db[selected] = f"{username},{password}"
+            self.top.destroy()
+            self.show()
+
+        else: msg.showerror("Error", "Yo must fill all blank spaces")
 
 if __name__ == '__main__':
     root = Tk()
