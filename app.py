@@ -124,24 +124,83 @@ class GUI(Frame):
             self.tree.insert("", "end", text = f"{site}", values = (username, password))
 
     def add(self):
-        pass
+        global width, height
+        width, height = 400, 100
+
+        self.top = Toplevel()
+        self.top.focus()
+        self.top.title("Add Password")
+        self.top.geometry(f"{width}x{height}+{screenWidth//2 - width//2}+{screenHeight//2 - height//2}")
+
+        siteLabel = Label(self.top, text = "Site: ", font = "ComicSans 12")
+        siteLabel.grid(row = 0, column = 0)
+
+        self.siteEntry = Entry(self.top)
+        self.siteEntry.grid(row = 0, column = 1)
+
+        usernameLabel = Label(self.top, text="Username: ", font="ComicSans 12")
+        usernameLabel.grid(row=1, column=0)
+
+        self.usernameEntry = Entry(self.top)
+        self.usernameEntry.grid(row=1, column=1)
+
+        passwordLabel = Label(self.top, text="Password: ", font="ComicSans 12")
+        passwordLabel.grid(row=2, column=0)
+
+        self.passwordEntry = Entry(self.top)
+        self.passwordEntry.grid(row=2, column=1)
+
+        addButton = Button(self.top, text = "Add", font="ComicSans 12", width = 7, command = self.insert)
+        addButton.grid(row = 1, column = 2)
+
+        Grid.columnconfigure(self.top, 0, weight = 1)
+        Grid.columnconfigure(self.top, 1, weight = 1)
+        Grid.columnconfigure(self.top, 2, weight = 1)
+
+        Grid.rowconfigure(self.top, 0, weight = 1)
+        Grid.rowconfigure(self.top, 1, weight = 1)
+        Grid.rowconfigure(self.top, 2, weight = 1)
+
+    def insert(self):
+        site = self.siteEntry.get()
+        username = self.usernameEntry.get()
+        password = self.passwordEntry.get()
+
+        if site != "" and username != "" and password != "":
+            self.db[site] = f"{username},{password}"
+            self.top.destroy()
+            self.show()
+
+        else:
+            msg.showerror("Error", "Yo must fill all blank spaces")
 
     def delete(self):
         currItem = self.tree.focus()
         selected = self.tree.item(currItem)["text"]
 
-        del self.db[selected]
-        self.show()
+        if selected == "":
+            msg.showerror("Error", "You need to select an element to delete")
+        else:
+            del self.db[selected]
+            self.show()
 
     def upt(self):
-        pass
+        currItem = self.tree.focus()
+        selected = self.tree.item(currItem)["text"]
+
+        if selected == "":
+            msg.showerror("Error", "You need to select an element to delete")
+        else:
+            pass
+
+
 
 
 
 if __name__ == '__main__':
     root = Tk()
     app = GUI(root)
-    root.title = "Password Keeper"
+    root.title("Password Keeper")
     screenWidth = root.winfo_screenwidth()
     screenHeight = root.winfo_screenheight()
     width = 400
